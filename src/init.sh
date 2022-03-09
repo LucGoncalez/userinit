@@ -19,10 +19,14 @@ else
   # Definindo variáveis
   LKS_USERINIT_INITDIR="${LKS_BASE_DIR}/init.d"
   LKS_USERINIT_INITFILE="${LKS_BASE_DIR}/init.tmp"
+  LKS_BIN_DIR="${LKS_BASE_DIR}/bin"
 
   if [ ! -d "$LKS_USERINIT_INITDIR" ] || ( [ -e "$LKS_USERINIT_INITFILE" ] && [ ! -f "$LKS_USERINIT_INITFILE" ] ); then
     printf "**ERROR** [userinit]: O script não está configurado corretamente.\n"
   else
+    # Configura PATH
+    PATH="${PATH}:${LKS_BIN_DIR}"
+
     # Carrega configurações para o arquivo de inicialização temporário
     for file in $ "$LKS_USERINIT_INITDIR"/*; do
       if [ -x "$file" ]; then
@@ -35,5 +39,5 @@ else
     rm "$LKS_USERINIT_INITFILE"
   fi
 
-  unset LKS_USERINIT_INITDIR LKS_USERINIT_INITFILE
+  unset LKS_USERINIT_INITDIR LKS_USERINIT_INITFILE LKS_BIN_DIR
 fi

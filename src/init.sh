@@ -6,29 +6,34 @@
 #
 ################################################################################
 
-# Verificando se parametro é adequado
+#
+# Obs. o diretório <init.d> não deve conter scripts para serem executados
+#
 
-if [ -z "$1" ]; then
-  echo "**ERROR** [userinit]: Não informado o parametro de configuração" >&2
+# Configurando diretório base do LKScript
+LKS_BASE_DIR="${HOME}/.lks"
+
+if [ ! -d "$LKS_BASE_DIR" ]; then
+  printf "**ERROR** [userinit]: O diretório base <%s> não existe.\n" "$LKS_BASE_DIR" >&2
 else
-  USERINIT_MAINPATH="${1%/}"
+  # Definindo variáveis
+  LKS_USERINIT_INITDIR="${LKS_BASE_DIR}/init.d"
+  LKS_USERINIT_INITFILE="${LKS_BASE_DIR}/init.tmp"
 
-  # Definir variáveis
-  USERINIT_INITDIR="${USERINIT_MAINPATH}/init.d"
-  USERINIT_INITFILE="${USERINIT_MAINPATH}/init.tmp"
-
-  # Testa o diretório de inicialização
-  if [ ! -d "$USERINIT_INITDIR" ]; then
-    echo "**ERROR** [userinit]: O parametro informado não está correto" >&2
+  if [ ! -d "$LKS_USERINIT_INITDIR" ] || ( [ -e "$LKS_USERINIT_INITFILE" ] && [ ! -f "$LKS_USERINIT_INITFILE" ] ); then
+    printf "**ERROR** [userinit]: O script não está configurado corretamente.\n"
   else
-    # Carrega configurações para arquivo temporário
-    for file in ${USERINIT_INITDIR}/*; do
+    # Carrega configurações para o arquivo de inicialização temporário
+    for file in $ "$LKS_USERINIT_INITDIR"/*; do
       if [ -x "$file" ]; then
-        echo ". $file"
+        printf ". %q\n" "$file"
       fi
-    done > "$USERINIT_INITFILE"
+    done > "$LKS_USERINIT_INITFILE"
 
-    . "$USERINIT_INITFILE"
-    rm "$USERINIT_INITFILE"
+    # Carrega arquivo temporário e remove o mesmo
+    . "$LKS_USERINIT_INITFILE"
+    rm "$LKS_USERINIT_INITFILE"
   fi
+
+  unset LKS_USERINIT_INITDIR LKS_USERINIT_INITFILE
 fi

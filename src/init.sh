@@ -17,7 +17,7 @@ if [ "$0" != 'bash' ]; then
 fi
 
 # Configurando diretório base do LKScript
-LKS_BASE_DIR="${HOME}/.lks"
+export LKS_BASE_DIR="${HOME}/.lks"
 
 if [ ! -d "$LKS_BASE_DIR" ]; then
   printf "**ERROR** [userinit]: O diretório base <%s> não existe.\n" "$LKS_BASE_DIR" >&2
